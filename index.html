@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pi Control</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { --bg: #0a0a0a; --card: #161616; --green: #2ecc71; --red: #e74c3c; --blue: #3498db; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: var(--card); padding: 40px 20px; border-radius: 30px; width: 85%; max-width: 400px; text-align: center; border: 1px solid #222; }
+        h1 { font-size: 1rem; color: #666; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; }
+        button { width: 100%; padding: 22px; margin: 12px 0; border-radius: 18px; border: none; font-size: 1.1rem; font-weight: bold; color: white; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
+        .btn-start { background: var(--green); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2); }
+        .btn-stop { background: var(--red); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2); }
+        button:active { transform: scale(0.95); opacity: 0.8; }
+        #log { margin-top: 20px; font-size: 0.8rem; color: #444; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>PiServer V1</h1>
+        <button class="btn-start" onclick="hit('start-books')">📚 OPEN LIBRARY</button>
+        <button class="btn-stop" onclick="hit('stop-books')">🎮 GAMING MODE</button>
+        <div id="log">SYSTEM READY</div>
+    </div>
+
+    <script>
+        const PI_ADDR = "http://100.84.248.6:5000"; // Use your Tailscale IP
+
+        async function hit(ep) {
+            const log = document.getElementById('log');
+            log.innerText = "TRANSMITTING...";
+            try {
+                // 'no-cors' bypasses browser safety blocks for local IPs
+                await fetch(`${PI_ADDR}/${ep}`, { method: 'POST', mode: 'no-cors' });
+                log.innerText = "COMMAND SENT";
+                setTimeout(() => { log.innerText = "IDLE"; }, 3000);
+            } catch (e) {
+                log.innerText = "ERR: PI OFFLINE";
+            }
+        }
+    </script>
+</body>
+</html>
