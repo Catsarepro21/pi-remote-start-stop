@@ -1,6 +1,6 @@
 # pi-remote-start-stop
 
-A minimalist PWA remote control for a Raspberry Pi 5 — start/stop Docker-based book-server containers and toggle Minecraft Mode to free RAM.
+A minimalist PWA remote control for a Raspberry Pi 5 — start/stop Docker-based book-server containers.
 
 ---
 
@@ -63,7 +63,6 @@ The `index.html` is served directly from the `main` branch via GitHub Pages.
 
 - **📚 OPEN LIBRARY** — starts all book containers  
 - **📦 STOP LIBRARY** — stops all book containers  
-- **🎮 Minecraft Mode toggle** — flips the same stop/start logic; designed as a persistent state indicator so you always know which mode the Pi is in
 
 > **Why `no-cors`?** Requests go from an HTTPS GitHub Pages origin to a plain HTTP Tailscale address. The browser would block this as a mixed-content request unless `mode: 'no-cors'` is used. With `no-cors` the request is sent as an *opaque* fetch — the command still reaches the Pi, but the response body is not readable by the page (which is fine here).
 
