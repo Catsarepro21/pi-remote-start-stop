@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+    <script>var vConsole = new window.VConsole();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pi Control</title>
@@ -26,18 +28,24 @@
     </div>
 
     <script>
-        const PI_ADDR = "http://100.84.248.6:5000"; // Use your Tailscale IP
+        const PI_IP = "piserver.tailfb8688.ts.net";
 
-        async function hit(ep) {
-            const log = document.getElementById('log');
-            log.innerText = "TRANSMITTING...";
+        async function hit(endpoint) {
+            const status = document.getElementById('log');
+            status.innerText = "SENDING...";
+
             try {
-                // 'no-cors' bypasses browser safety blocks for local IPs
-                await fetch(`${PI_ADDR}/${ep}`, { method: 'POST', mode: 'no-cors' });
-                log.innerText = "COMMAND SENT";
-                setTimeout(() => { log.innerText = "IDLE"; }, 3000);
+                // We use 'no-cors' so Safari doesn't block the HTTP request
+                await fetch(`https://${PI_IP}/${endpoint}`, {
+                    method: 'POST',
+                    mode: 'no-cors'
+                });
+                status.innerText = "COMMAND SENT";
+
+                // Optional: Reset the text after 3 seconds
+                setTimeout(() => { status.innerText = "READY"; }, 3000);
             } catch (e) {
-                log.innerText = "ERR: PI OFFLINE";
+                status.innerText = "OFFLINE - CHECK TAILSCALE";
             }
         }
     </script>
