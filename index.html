@@ -1,53 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-    <script>var vConsole = new window.VConsole();</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pi Control</title>
-    <link rel="manifest" href="manifest.json">
-    <style>
-        :root { --bg: #0a0a0a; --card: #161616; --green: #2ecc71; --red: #e74c3c; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .card { background: var(--card); padding: 40px 20px; border-radius: 30px; width: 85%; max-width: 400px; text-align: center; border: 1px solid #222; }
-        h1 { font-size: 1rem; color: #666; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; }
-        button { width: 100%; padding: 22px; margin: 12px 0; border-radius: 18px; border: none; font-size: 1.1rem; font-weight: bold; color: white; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
-        .btn-start { background: var(--green); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2); }
-        .btn-stop { background: var(--red); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2); }
-        button:active { transform: scale(0.95); opacity: 0.8; }
-        #log { margin-top: 20px; font-size: 0.8rem; color: #444; font-family: monospace; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- PWA – Android / Chrome -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#080808">
+
+  <!-- PWA – iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Server">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/906/906341.png">
+
+  <title>Home Server</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace; }
+    .btn { transition: background-color 80ms, transform 80ms; }
+    .btn:active { transform: scale(0.95); background-color: #181818; }
+    @media (hover: hover) { .btn:hover { background-color: #161616; } }
+  </style>
 </head>
-<body>
-    <div class="card">
-        <h1>PiServer V1</h1>
-        <button class="btn-start" onclick="hit('start-books')">📚 OPEN LIBRARY</button>
-        <button class="btn-stop" onclick="hit('stop-books')">📦 STOP LIBRARY</button>
-        <div id="log">SYSTEM READY</div>
-    </div>
 
-    <script>
-        const PI_IP = "piserver.tailfb8688.ts.net";
+<body class="bg-[#080808] min-h-screen text-white select-none antialiased">
 
-        async function hit(endpoint) {
-            const status = document.getElementById('log');
-            status.innerText = "SENDING...";
+  <div class="max-w-xs mx-auto px-5 pt-12 pb-10 flex flex-col min-h-screen"
+       style="padding-top: max(3rem, env(safe-area-inset-top, 3rem)); padding-bottom: max(2.5rem, env(safe-area-inset-bottom, 2.5rem));">
 
-            try {
-                // We use 'no-cors' so Safari doesn't block the HTTP request
-                await fetch(`https://${PI_IP}/${endpoint}`, {
-                    method: 'POST',
-                    mode: 'no-cors'
-                });
-                status.innerText = "COMMAND SENT";
+    <!-- Header -->
+    <header class="flex items-start justify-between mb-9">
+      <div>
+        <p class="text-[9px] tracking-[0.35em] text-[#333] uppercase mb-0.5">Dashboard</p>
+        <h1 class="text-[13px] font-semibold tracking-[0.2em] text-[#888] uppercase">Home Server</h1>
+      </div>
+      <div class="flex items-center gap-1.5 mt-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-label="System online" style="box-shadow: 0 0 6px #10b981aa;"></span>
+        <span id="clock" class="text-[10px] tracking-widest text-[#333]">--:--</span>
+      </div>
+    </header>
 
-                // Optional: Reset the text after 3 seconds
-                setTimeout(() => { status.innerText = "READY"; }, 3000);
-            } catch (e) {
-                status.innerText = "OFFLINE - CHECK TAILSCALE";
-            }
-        }
-    </script>
+    <!-- Button grid -->
+    <main class="grid grid-cols-2 gap-2.5">
+
+      <a href="http://home.local" target="_blank" rel="noopener noreferrer"
+         class="btn flex flex-col items-center justify-center gap-3 bg-[#111] border border-[#1c1c1c] rounded-xl"
+         style="aspect-ratio:1;">
+        <i data-lucide="house" style="width:26px;height:26px;color:#6b6b6b;stroke-width:1.5;"></i>
+        <span class="text-[9px] tracking-[0.3em] uppercase text-[#444]">Home</span>
+      </a>
+
+      <a href="http://pihole.local" target="_blank" rel="noopener noreferrer"
+         class="btn flex flex-col items-center justify-center gap-3 bg-[#111] border border-[#1c1c1c] rounded-xl"
+         style="aspect-ratio:1;">
+        <i data-lucide="shield-check" style="width:26px;height:26px;color:#6b6b6b;stroke-width:1.5;"></i>
+        <span class="text-[9px] tracking-[0.3em] uppercase text-[#444]">Pi-hole</span>
+      </a>
+
+      <a href="http://status.local" target="_blank" rel="noopener noreferrer"
+         class="btn flex flex-col items-center justify-center gap-3 bg-[#111] border border-[#1c1c1c] rounded-xl"
+         style="aspect-ratio:1;">
+        <i data-lucide="activity" style="width:26px;height:26px;color:#6b6b6b;stroke-width:1.5;"></i>
+        <span class="text-[9px] tracking-[0.3em] uppercase text-[#444]">Status</span>
+      </a>
+
+      <a href="http://logs.local" target="_blank" rel="noopener noreferrer"
+         class="btn flex flex-col items-center justify-center gap-3 bg-[#111] border border-[#1c1c1c] rounded-xl"
+         style="aspect-ratio:1;">
+        <i data-lucide="scroll" style="width:26px;height:26px;color:#6b6b6b;stroke-width:1.5;"></i>
+        <span class="text-[9px] tracking-[0.3em] uppercase text-[#444]">Logs</span>
+      </a>
+
+      <a href="http://prowlarr.local" target="_blank" rel="noopener noreferrer"
+         class="btn flex flex-col items-center justify-center gap-3 bg-[#111] border border-[#1c1c1c] rounded-xl"
+         style="aspect-ratio:1;">
+        <i data-lucide="crosshair" style="width:26px;height:26px;color:#6b6b6b;stroke-width:1.5;"></i>
+        <span class="text-[9px] tracking-[0.3em] uppercase text-[#444]">Prowlarr</span>
+      </a>
+
+      <!-- Opens the existing Pi Control (start/stop books) page -->
+      <a href="./picontrol.html" target="_blank" rel="noopener noreferrer"
+         class="btn flex flex-col items-center justify-center gap-3 bg-[#111] border border-[#1c1c1c] rounded-xl"
+         style="aspect-ratio:1;">
+        <i data-lucide="book-open" style="width:26px;height:26px;color:#6b6b6b;stroke-width:1.5;"></i>
+        <span class="text-[9px] tracking-[0.3em] uppercase text-[#444]">Library</span>
+      </a>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto pt-10 text-center">
+      <p class="text-[9px] tracking-[0.3em] text-[#222] uppercase">v1.0</p>
+    </footer>
+
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    lucide.createIcons();
+
+    function tick() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').textContent = h + ':' + m;
+    }
+    tick();
+    // Sync to the next full minute, then update every 60 s
+    setTimeout(function syncClock() {
+      tick();
+      setInterval(tick, 60000);
+    }, (60 - new Date().getSeconds()) * 1000);
+  </script>
+
 </body>
 </html>
