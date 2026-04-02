@@ -6,14 +6,24 @@
     <title>Pi Control</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        :root { --bg: #0a0a0a; --card: #161616; --green: #2ecc71; --red: #e74c3c; --blue: #3498db; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        :root { --bg: #0a0a0a; --card: #161616; --green: #2ecc71; --red: #e74c3c; --mc: #5dba47; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         .card { background: var(--card); padding: 40px 20px; border-radius: 30px; width: 85%; max-width: 400px; text-align: center; border: 1px solid #222; }
         h1 { font-size: 1rem; color: #666; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; }
         button { width: 100%; padding: 22px; margin: 12px 0; border-radius: 18px; border: none; font-size: 1.1rem; font-weight: bold; color: white; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
         .btn-start { background: var(--green); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2); }
         .btn-stop { background: var(--red); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2); }
         button:active { transform: scale(0.95); opacity: 0.8; }
+        /* Minecraft Mode toggle */
+        .mc-row { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; padding: 14px 18px; background: #1e1e1e; border-radius: 16px; border: 1px solid #2a2a2a; }
+        .mc-label { font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; color: #aaa; }
+        .mc-label span { display: block; font-size: 0.7rem; color: #555; margin-top: 2px; font-weight: normal; }
+        .toggle { position: relative; width: 52px; height: 28px; flex-shrink: 0; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; inset: 0; background: #333; border-radius: 28px; cursor: pointer; transition: 0.25s; }
+        .slider:before { content: ''; position: absolute; width: 20px; height: 20px; left: 4px; top: 4px; background: white; border-radius: 50%; transition: 0.25s; }
+        input:checked + .slider { background: var(--mc); box-shadow: 0 0 10px rgba(93,186,71,0.4); }
+        input:checked + .slider:before { transform: translateX(24px); }
         #log { margin-top: 20px; font-size: 0.8rem; color: #444; font-family: monospace; }
     </style>
 </head>
@@ -21,7 +31,17 @@
     <div class="card">
         <h1>PiServer V1</h1>
         <button class="btn-start" onclick="hit('start-books')">📚 OPEN LIBRARY</button>
-        <button class="btn-stop" onclick="hit('stop-books')">🎮 GAMING MODE</button>
+        <button class="btn-stop" onclick="hit('stop-books')">📦 STOP LIBRARY</button>
+        <div class="mc-row">
+            <div class="mc-label">
+                🎮 MINECRAFT MODE
+                <span>Stops library containers to free RAM</span>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" id="mcToggle" onchange="toggleMinecraft(this)">
+                <span class="slider"></span>
+            </label>
+        </div>
         <div id="log">SYSTEM READY</div>
     </div>
 
@@ -40,6 +60,23 @@
                 log.innerText = "ERR: PI OFFLINE";
             }
         }
+
+        function toggleMinecraft(checkbox) {
+            localStorage.setItem('mcMode', checkbox.checked ? '1' : '0');
+            if (checkbox.checked) {
+                hit('stop-books');
+            } else {
+                hit('start-books');
+            }
+        }
+
+        // Restore toggle state on load
+        (function () {
+            const saved = localStorage.getItem('mcMode');
+            if (saved === '1') {
+                document.getElementById('mcToggle').checked = true;
+            }
+        })();
     </script>
 </body>
 </html>
