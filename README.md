@@ -9,7 +9,7 @@ A minimalist PWA remote control for a Raspberry Pi 5 — start/stop Docker-based
 | Layer | Detail |
 |---|---|
 | Frontend | `index.html` hosted on GitHub Pages |
-| Backend | Flask API (`app.py`) on the Pi, port 5000 |
+| Backend | Flask API (`app.py`) on the Pi, port 5050 |
 | Networking | Tailscale (static IP `100.84.248.6`) |
 
 ---
@@ -53,7 +53,7 @@ sudo systemctl status books-server
 
 **Containers managed:** `transmission`, `lazylibrarian`, `prowlarr`, `flaresolverr`
 
-> **Security:** The API has no authentication layer by design — Tailscale provides network-level access control so only devices on your Tailnet can reach port 5000. Do not expose this port to the public internet.
+> **Security:** The API has no authentication layer by design — Tailscale provides network-level access control so only devices on your Tailnet can reach port 5050. Do not expose this port to the public internet.
 
 ---
 
